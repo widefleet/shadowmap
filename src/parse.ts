@@ -35,6 +35,9 @@ const HOST_FIELDS = [
   "destination",
   "resource",
   "destinationdnshostname",
+  "urlfilename",
+  "urldomain",
+  "uri",
 ] as const;
 
 /** Ordered by preference: devices before users before IP addresses. */
@@ -42,6 +45,8 @@ const CLIENT_FIELDS = [
   "devicename",
   "srcname",
   "srcmachinename",
+  "sourcehostname",
+  "sourcedevicehost",
   "devicehostname",
   "device",
   "computername",
@@ -72,6 +77,7 @@ const CLIENT_FIELDS = [
   "ipaddress",
   "clientaddress",
   "source",
+  "sourceipvalue",
   "internalip",
   "internalclientip",
 ] as const;
@@ -86,6 +92,9 @@ const TIME_FIELDS = [
   "date",
   "ts",
   "starttime",
+  "receivetime",
+  "generatetime",
+  "timelogged",
 ] as const;
 
 const HEADER_SEARCH_LINES = 50;
@@ -94,8 +103,9 @@ const DELIMITERS = [",", ";", "\t"] as const;
 
 const EMPTY_VALUES = new Set(["", "-", "null", "none", "n/a"]);
 
-// Sophos Firewall names itself in `device` and `device_name`; its lines carry
-// `log_type` and a device ID.
+// Sophos Firewall and Palo Alto Networks name the firewall itself in `device`
+// or `device_name`. Sophos lines carry `log_type` and a device ID, Palo Alto
+// exports a serial number.
 const FIREWALL_DEVICE_FIELDS: ReadonlySet<string> = new Set(["device", "devicename"]);
 
 // Cloudflare Gateway logs traffic without a signed-in user under this address.
@@ -244,7 +254,8 @@ function timeOf(fields: Fields): Date | undefined {
 
 function clientOf(fields: Fields): string | undefined {
   const namesFirewall =
-    fields.has("logtype") && (fields.has("deviceid") || fields.has("deviceserialid"));
+    (fields.has("logtype") && (fields.has("deviceid") || fields.has("deviceserialid"))) ||
+    fields.has("serial");
 
   for (const name of CLIENT_FIELDS) {
     if (namesFirewall && FIREWALL_DEVICE_FIELDS.has(name)) {

@@ -204,6 +204,21 @@ describe("vendor exports", () => {
     ]);
   });
 
+  it("reads a Palo Alto Networks URL Filtering export", () => {
+    expect(
+      parseAll([
+        "Domain,Receive Time,Serial #,Type,Threat/Content Type,Generate Time,Source address,Destination address,Rule,Source User,Destination User,Application,Device Name,Action,URL/Filename,Category",
+        "1,2026/11/20 09:43:17,013201001234,THREAT,url,2026/11/20 09:43:16,10.0.4.17,104.18.22.186,allow-web,example\\anna,,ssl,PA-FW-01,alert,planner.chatgpt.site/,computer-and-internet-info",
+      ]),
+    ).toEqual([
+      {
+        hosts: ["planner.chatgpt.site"],
+        client: "example\\anna",
+        time: new Date("2026-11-20T09:43:17Z"),
+      },
+    ]);
+  });
+
   it("reads a Windows DNS debug log line with a 64-bit packet id", () => {
     expect(
       parseAll([
