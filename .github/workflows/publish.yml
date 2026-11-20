@@ -22,7 +22,6 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 26.8.2
-          registry-url: https://registry.npmjs.org
           package-manager-cache: false
       - name: Install dependencies
         run: |
@@ -31,4 +30,5 @@ jobs:
       - name: Check that the tag matches the package version
         run: test "v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
       # prepublishOnly runs the checks and the build before npm uploads the package.
-      - run: npm publish
+      # Without setup-node's registry-url, npm authenticates through OIDC instead of a token.
+      - run: npm publish --registry=https://registry.npmjs.org --access=public --provenance
