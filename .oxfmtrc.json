@@ -1,0 +1,6 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": ["tools/oxlint/anti-slop/**", "pnpm-lock.yaml", "**/dist/**"],
+  "tabWidth": 2,
+  "useTabs": false
+}
