@@ -55,7 +55,7 @@ The query reads the normalized DNS and web session data (ASIM) that Sentinel bui
    ```sh
    npx shadowmap sentinel-query --days 7
    ```
-2. In the [Azure portal](https://portal.azure.com), open the Log Analytics workspace that Sentinel uses and select **Logs**. Switch to **KQL mode**, paste the query and select **Run**.
+2. Open your [Log Analytics workspaces](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.OperationalInsights%2Fworkspaces) in the Azure portal, select the workspace that Sentinel uses and select **Logs**. Switch to **KQL mode**, paste the query and select **Run**.
 3. Select **Export > Export to CSV - all columns**.
 4. Scan it:
    ```sh
