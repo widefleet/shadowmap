@@ -13,7 +13,7 @@ type Fields = ReadonlyMap<string, string>;
 
 /**
  * Column and key names across Zscaler, Netskope, Cloudflare Gateway, Defender,
- * firewall syslog and generic exports, compared after lowercasing and removing
+ * Cisco Umbrella, firewall syslog and generic exports, compared after lowercasing and removing
  * everything but letters and digits (`Query Name` -> `queryname`).
  */
 const HOST_FIELDS = [
@@ -32,6 +32,7 @@ const HOST_FIELDS = [
   "destinationhost",
   "sni",
   "servername",
+  "destination",
 ] as const;
 
 /** Ordered by preference: devices before users before IP addresses. */
@@ -51,6 +52,12 @@ const CLIENT_FIELDS = [
   "upn",
   "accountname",
   "initiatingprocessaccountname",
+  "mostgranularidentity",
+  "policyidentitylabel",
+  "policyorrulesetidentity",
+  "policyidentity",
+  "identity",
+  "identities",
   "srcip",
   "sourceip",
   "clientip",
@@ -59,6 +66,8 @@ const CLIENT_FIELDS = [
   "sourceipaddress",
   "ipaddress",
   "clientaddress",
+  "internalip",
+  "internalclientip",
 ] as const;
 
 const TIME_FIELDS = [

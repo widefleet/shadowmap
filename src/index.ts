@@ -12,6 +12,8 @@ export type { LogEvent } from "./parse.ts";
 
 export { LogParser } from "./parse.ts";
 
+export { sentinelQuery } from "./sentinel.ts";
+
 export { platforms } from "./platforms.ts";
 
 export type { Finding, PlatformTotal, Report } from "./report.ts";

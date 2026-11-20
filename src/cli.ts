@@ -8,19 +8,21 @@ import { cloudflareMaxDays, cloudflareQuery } from "./cloudflare.ts";
 import { defenderMaxDays, defenderQuery } from "./defender.ts";
 import { formatReport, reportJson } from "./format.ts";
 import { Scanner, linesOf } from "./scan.ts";
+import { sentinelMaxDays, sentinelQuery } from "./sentinel.ts";
 import { version } from "./version.ts";
 import { isZip, xlsxLines } from "./xlsx.ts";
 
 const usage = `Usage:
   shadowmap scan [file ...] [--json]   Scan log files or .xlsx exports, or stdin when no file is given
   shadowmap defender-query [--days N]  Print the Microsoft Defender Advanced Hunting query
+  shadowmap sentinel-query [--days N]  Print the Microsoft Sentinel query
   shadowmap cloudflare-query --account ID [--days N]
                                        Print the Cloudflare Gateway GraphQL request body
   shadowmap catalog [--json]           List known platforms and domains
 
 Options:
   --json        Print machine-readable JSON
-  --days N      Days of history, 1 to 30 (default 7)
+  --days N      Days of history (default 7): up to 30, or 90 for sentinel-query
   --account ID  Cloudflare account ID for cloudflare-query
   -h, --help    Show this help
   -v, --version Show the version`;
@@ -88,6 +90,20 @@ async function main(argv: readonly string[]): Promise<number> {
       }
 
       process.stdout.write(`${defenderQuery(days)}\n`);
+
+      return 0;
+    }
+
+    case "sentinel-query": {
+      const days = Number(values.days);
+
+      if (!Number.isInteger(days) || days < 1 || days > sentinelMaxDays) {
+        process.stderr.write(`--days must be a whole number from 1 to ${sentinelMaxDays}\n`);
+
+        return 1;
+      }
+
+      process.stdout.write(`${sentinelQuery(days)}\n`);
 
       return 0;
     }

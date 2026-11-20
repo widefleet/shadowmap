@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
 
-import { Catalog, defaultCatalog, defenderQuery } from "../src/index.ts";
+import { Catalog, defaultCatalog, defenderQuery, sentinelQuery } from "../src/index.ts";
 import { version } from "../src/version.ts";
 
 describe("Catalog", () => {
@@ -117,5 +117,17 @@ describe("version", () => {
     const manifest = await readFile(new URL("../package.json", import.meta.url), "utf8");
 
     expect(manifest).toContain(`"version": "${version}"`);
+  });
+});
+
+describe("sentinelQuery", () => {
+  it("queries ASIM DNS and web sessions for every catalog domain", () => {
+    const query = sentinelQuery(14);
+
+    expect(query).toContain("let start = ago(14d);");
+    expect(query).toContain("_Im_Dns(starttime=start)");
+    expect(query).toContain("_Im_WebSession(starttime=start)");
+    expect(query).toContain('"chatgpt.site"');
+    expect(query).toContain("User = Client, Host");
   });
 });

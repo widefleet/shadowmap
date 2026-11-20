@@ -147,6 +147,48 @@ describe("vendor exports", () => {
     ]);
   });
 
+  it("reads Cisco Umbrella DNS logs and Activity Search exports", () => {
+    expect(
+      parseAll([
+        '"Timestamp","Most Granular Identity","Identities","Internal IP","External IP","Action","Query Type","Response Code","Domain","Categories"',
+        '"2026-11-20 08:46:00","Active Directory User (anna@example.com)","Active Directory User (anna@example.com),WIN11-ANNA","10.10.1.100","198.51.100.7","Allowed","1 (A)","NOERROR","crm-dashboard.lovable.app.","Software/Technology"',
+      ]),
+    ).toEqual([
+      {
+        hosts: ["crm-dashboard.lovable.app"],
+        client: "Active Directory User (anna@example.com)",
+        time: new Date("2026-11-20T08:46:00Z"),
+      },
+    ]);
+
+    expect(
+      parseAll([
+        "Date,Time,Policy or Ruleset Identity,Internal IP,Destination,Action",
+        "2026-11-20,08:47:10,WIN11-BEN,10.10.1.101,planner.chatgpt.site,Allowed",
+      ]),
+    ).toEqual([
+      {
+        hosts: ["planner.chatgpt.site"],
+        client: "WIN11-BEN",
+        time: new Date("2026-11-20T08:47:10Z"),
+      },
+    ]);
+  });
+
+  it("reads Squid CONNECT requests", () => {
+    expect(
+      parseAll([
+        "1795164426.755   1638 192.168.78.252 TCP_TUNNEL/200 533406 CONNECT notes.netlify.app:443 - HIER_DIRECT/142.250.184.238 -",
+      ]),
+    ).toEqual([
+      {
+        hosts: ["notes.netlify.app"],
+        client: "192.168.78.252",
+        time: new Date(1_795_164_426_755),
+      },
+    ]);
+  });
+
   it("reads a Windows DNS debug log line with a 64-bit packet id", () => {
     expect(
       parseAll([
