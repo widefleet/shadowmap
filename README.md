@@ -38,7 +38,7 @@ Needs Advanced Hunting, included in Defender for Endpoint Plan 2 and Microsoft 3
    ```sh
    npx shadowmap defender-query --days 7
    ```
-2. Open [Advanced hunting](https://security.microsoft.com/advanced-hunting) in the Microsoft Defender portal, paste the query and select **Run query**.
+2. Open [Advanced hunting](https://security.microsoft.com/v2/advanced-hunting) in the Microsoft Defender portal, paste the query and select **Run query**.
 3. Select **Export**. Defender saves an Excel workbook.
 4. Scan it:
    ```sh
@@ -62,7 +62,7 @@ The query reads the normalized DNS and web session data (ASIM) that Sentinel bui
    npx shadowmap scan query_data.csv
    ```
 
-The query returns one row per user, host and day; the Logs page exports up to 500,000 rows. If your workspace is connected to the Microsoft Defender portal, you can also run the query in [Advanced hunting](https://security.microsoft.com/advanced-hunting) and scan the exported workbook.
+The query returns one row per user, host and day; the Logs page exports up to 500,000 rows. If your workspace is connected to the Microsoft Defender portal, you can also run the query in [Advanced hunting](https://security.microsoft.com/v2/advanced-hunting) and scan the exported workbook.
 
 ### Cloudflare Gateway
 
@@ -90,7 +90,7 @@ To keep complete logs beyond 30 days, set up [Logpush](https://developers.cloudf
 
 ### Zscaler Internet Access
 
-1. Open **Analytics > Web Insights > Logs**. In the Experience Center, open **Logs > Insights > Internet & SaaS**.
+1. Open **Analytics > Web Insights > Logs**; in the classic admin portal, `https://admin.<cloud>.net/#insights/web` opens Web Insights directly. In the Experience Center, open **Logs > Insights > Internet & SaaS**.
 2. Set the time range to the last 7 days.
 3. Select **Export CSV** and choose the largest record limit. Long queries move to **Job Center**; download the file there.
 4. Scan it:
@@ -127,7 +127,7 @@ An export holds up to 100,000 rows. If your organization already sends logs to A
 
 URL Filtering logs name each site a user visits, also for HTTPS without decryption. Allowed sites are only logged when their category's action in the URL Filtering profile is **alert**; with **allow**, nothing is logged.
 
-1. Raise the export limit: go to **Device > Setup > Management**, edit **Logging and Reporting Settings**, open **Log Export and Reporting**, set **Max Rows in CSV Export** to `1048576` and commit.
+1. Raise the export limit: go to **Device > Setup > Management** (`https://<firewall>/#device::vsys1::device/setup`), edit **Logging and Reporting Settings**, open **Log Export and Reporting**, set **Max Rows in CSV Export** to `1048576` and commit.
 2. Go to **Monitor > Logs > URL Filtering**, enter a filter for the last 7 days, such as `( receive_time geq '2026/11/13 00:00:00' )`, and apply it.
 3. Select **Export to CSV**, then **Download file**.
 4. Scan it:
@@ -141,7 +141,7 @@ With logs in Strata Logging Service, open **Log Viewer** in [Strata Cloud Manage
 
 Web Filter logs name each site, also without deep inspection. Allowed sites are only logged when the web filter profile logs all URLs (`set log-all-url enable`) and the firewall policy logs **All Sessions**.
 
-1. Go to **Log & Report > Security Events** and choose **Web Filter**.
+1. Open the Web Filter log at `https://<fortigate>/ng/log/view/webfilter`, or go to **Log & Report > Security Events** and choose **Web Filter**.
 2. Set the log location to **Disk** and filter the time to the last 7 days.
 3. Select the download icon and **Download as a single file**.
 4. Scan it:
