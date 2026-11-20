@@ -1,7 +1,8 @@
 name: Publish
 
-# Publishes to npm through trusted publishing when a version tag is pushed.
+# Stages a release on npm through trusted publishing when a version tag is pushed.
 # npmjs.com must list this repository and workflow as the package's trusted publisher.
+# A maintainer approves the staged version with 2FA on npmjs.com before it goes live.
 on:
   push:
     tags: ["v*"]
@@ -31,4 +32,4 @@ jobs:
         run: test "v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
       # prepublishOnly runs the checks and the build before npm uploads the package.
       # Without setup-node's registry-url, npm authenticates through OIDC instead of a token.
-      - run: npm publish --registry=https://registry.npmjs.org --access=public --provenance
+      - run: npm stage publish --registry=https://registry.npmjs.org --access=public --provenance
