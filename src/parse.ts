@@ -33,12 +33,15 @@ const HOST_FIELDS = [
   "sni",
   "servername",
   "destination",
+  "resource",
+  "destinationdnshostname",
 ] as const;
 
 /** Ordered by preference: devices before users before IP addresses. */
 const CLIENT_FIELDS = [
   "devicename",
   "srcname",
+  "srcmachinename",
   "devicehostname",
   "device",
   "computername",
@@ -48,6 +51,8 @@ const CLIENT_FIELDS = [
   "user",
   "username",
   "unauthuser",
+  "sourceuser",
+  "srcusername",
   "userprincipalname",
   "upn",
   "accountname",
@@ -66,6 +71,7 @@ const CLIENT_FIELDS = [
   "sourceipaddress",
   "ipaddress",
   "clientaddress",
+  "source",
   "internalip",
   "internalclientip",
 ] as const;

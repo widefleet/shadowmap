@@ -189,6 +189,21 @@ describe("vendor exports", () => {
     ]);
   });
 
+  it("reads Check Point logs from fwm logexport", () => {
+    expect(
+      parseAll([
+        "num;date;time;orig;type;action;src;dst;product;user;resource",
+        "0;20Nov2026;09:47:54;gw-01;log;accept;10.0.4.17;104.18.22.186;URL Filtering;anna (anna@example.com);https://planner.chatgpt.site/",
+      ]),
+    ).toEqual([
+      {
+        hosts: ["planner.chatgpt.site"],
+        client: "anna (anna@example.com)",
+        time: new Date("2026-11-20T09:47:54Z"),
+      },
+    ]);
+  });
+
   it("reads a Windows DNS debug log line with a 64-bit packet id", () => {
     expect(
       parseAll([

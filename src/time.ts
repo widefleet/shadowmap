@@ -4,12 +4,32 @@ const EPOCH_MILLISECONDS = /^\d{12,13}$/;
 
 const DAY_FIRST_DOTTED = /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/;
 
+// Check Point's `fwm logexport` writes `13Jun2026 19:47:54`.
+const DAY_MONTH_NAME =
+  /^(\d{1,2})(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/i;
+
+const MONTH_NAMES = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+];
+
 const SLASHED =
   /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?)?/i;
 
 /**
  * Parses the timestamp formats found in log exports: ISO 8601, epoch seconds
- * or milliseconds, `DD.MM.YYYY HH:MM:SS` and `M/D/YYYY h:mm:ss AM`. Slashed
+ * or milliseconds, `DD.MM.YYYY HH:MM:SS`, `DDMonYYYY HH:MM:SS` and
+ * `M/D/YYYY h:mm:ss AM`. Slashed
  * dates are read month-first unless the first number cannot be a month.
  * Times without a zone are local time.
  */
@@ -34,6 +54,15 @@ export function parseTime(value: string): Date | undefined {
     const [, day, month, year, hour, minute, second] = dotted;
 
     return localDate([year, month, day, hour, minute, second]);
+  }
+
+  const named = DAY_MONTH_NAME.exec(text);
+
+  if (named !== null) {
+    const [, day, monthName = "", year, hour, minute, second] = named;
+    const month = MONTH_NAMES.indexOf(monthName.toLowerCase()) + 1;
+
+    return localDate([year, String(month), day, hour, minute, second]);
   }
 
   const slashed = SLASHED.exec(text);
