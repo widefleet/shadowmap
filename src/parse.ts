@@ -37,6 +37,7 @@ const HOST_FIELDS = [
 /** Ordered by preference: devices before users before IP addresses. */
 const CLIENT_FIELDS = [
   "devicename",
+  "srcname",
   "devicehostname",
   "device",
   "computername",
@@ -45,6 +46,7 @@ const CLIENT_FIELDS = [
   "useremail",
   "user",
   "username",
+  "unauthuser",
   "userprincipalname",
   "upn",
   "accountname",
@@ -76,6 +78,10 @@ const HEADER_SEARCH_LINES = 50;
 const DELIMITERS = [",", ";", "\t"] as const;
 
 const EMPTY_VALUES = new Set(["", "-", "null", "none", "n/a"]);
+
+// Sophos Firewall names itself in `device` and `device_name`; its lines carry
+// `log_type` and a device ID.
+const FIREWALL_DEVICE_FIELDS: ReadonlySet<string> = new Set(["device", "devicename"]);
 
 // Cloudflare Gateway logs traffic without a signed-in user under this address.
 const ANONYMOUS_CLIENT = /^non_identity@/i;
@@ -222,7 +228,14 @@ function timeOf(fields: Fields): Date | undefined {
 }
 
 function clientOf(fields: Fields): string | undefined {
+  const namesFirewall =
+    fields.has("logtype") && (fields.has("deviceid") || fields.has("deviceserialid"));
+
   for (const name of CLIENT_FIELDS) {
+    if (namesFirewall && FIREWALL_DEVICE_FIELDS.has(name)) {
+      continue;
+    }
+
     const value = valueOf(fields, name);
 
     if (value !== undefined && !ANONYMOUS_CLIENT.test(value)) {

@@ -107,6 +107,46 @@ describe("vendor exports", () => {
     ]);
   });
 
+  it("reads FortiGate web filter and DNS logs", () => {
+    expect(
+      parseAll([
+        'date=2026-11-20 time=09:34:31 eventtime=1795167271720798942 tz="+0100" logid="0316013056" type="utm" subtype="webfilter" eventtype="ftgd_allow" srcip=10.1.100.123 srcmac="00:0c:29:06:7e:5b" srcname="PC-ANNA" unauthuser="anna" hostname="crm-dashboard.lovable.app" url="https://crm-dashboard.lovable.app/" action="passthrough"',
+        'date=2026-11-20 time=09:35:02 logid="1501054802" type="utm" subtype="dns" srcip=10.1.100.22 qname="team-wiki.chatgpt.site" qtype="A" action="pass"',
+      ]),
+    ).toEqual([
+      {
+        hosts: ["crm-dashboard.lovable.app"],
+        client: "PC-ANNA",
+        time: new Date("2026-11-20T09:34:31Z"),
+      },
+      {
+        hosts: ["team-wiki.chatgpt.site"],
+        client: "10.1.100.22",
+        time: new Date("2026-11-20T09:35:02Z"),
+      },
+    ]);
+  });
+
+  it("reads Sophos Firewall logs without taking the firewall for the client", () => {
+    expect(
+      parseAll([
+        'device="SFW" date=2026-11-20 time=09:30:33 timezone="CET" device_name="SFVUNL" device_id=C01001K234RXPA1 log_id=050902616002 log_type="Content Filtering" log_component="HTTP" log_subtype="Allowed" user_name="anna" src_ip=192.168.73.220 dst_ip=208.69.252.169 url="https://planner.vercel.app/" domain=planner.vercel.app',
+        'device_name="SFW" timestamp="2026-11-20T09:39:43+0100" device_model="XGS2100" device_serial_id="X21000ABC" log_id="123" log_type="SSL" log_subtype="Do not decrypt" src_ip="10.146.6.42" sni="notes.pages.dev"',
+      ]),
+    ).toEqual([
+      {
+        hosts: ["planner.vercel.app"],
+        client: "anna",
+        time: new Date("2026-11-20T09:30:33Z"),
+      },
+      {
+        hosts: ["notes.pages.dev"],
+        client: "10.146.6.42",
+        time: new Date("2026-11-20T08:39:43Z"),
+      },
+    ]);
+  });
+
   it("reads a Windows DNS debug log line with a 64-bit packet id", () => {
     expect(
       parseAll([
